@@ -1,7 +1,8 @@
 ﻿param([string]$VMName='')
 
-#$xmlpath = $($env:ZABBIX_CONFDIR + "\state\VBRdump.xml")
-$xmlpath = "C:\users\Carl\Desktop\VBRdump.xml"
+$xmlpath = $($env:ZABBIX_CONFDIR + "\state\VBRdump.xml")
+
+Add-PSSnapin VeeamPSSnapIn
 
 class jobinfo
 {
@@ -27,8 +28,6 @@ if (-Not [string]::IsNullOrWhiteSpace($VMName)) {
     $veeamdata | Where-Object { $_.jobname -eq $VMName } | Select-Object -First 1 | ConvertTo-Json -Compress
     exit
 }
-
-Add-PSSnapin VeeamPSSnapIn
 
 Get-VBRJob | ForEach-Object {
     [Veeam.Backup.Core.CBackupSession]$session = $_.FindLastSession()
