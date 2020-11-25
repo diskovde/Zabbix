@@ -1,6 +1,6 @@
 ﻿param([string]$JobName='')
 
-$xmlpath = $($env:ZABBIX_CONFDIR + "\state\veeamdump.xml")
+$xmlpath = $($env:ZABBIX_CONFDIR + "\state\VCCdump.xml")
 
 Add-PSSnapin VeeamPSSnapIn
 
