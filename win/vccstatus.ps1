@@ -1,51 +1,46 @@
-﻿param([string]$JobName='')
+﻿param([string]$TenantName='')
 
 $xmlpath = $($env:ZABBIX_CONFDIR + "\state\VCCdump.xml")
 
 Add-PSSnapin VeeamPSSnapIn
-
-function CCToJobInfo {
-    param (
-        $veeamjob
-    )
-    $jobinfo = New-Object jobinfo
-    $jobinfo.jobname = $veeamjob.Name
-    $jobinfo.jobstatus = $veeamjob.Lastresult
-    try
-    {
-        $jobinfo.lastrun = [datetime]::ParseExact($veeamjob.Lastactive, "dd.MM.yyyy hh:mm", $null).ToUnixTimeSeconds()
-    }
-    catch 
-    {
-        $jobinfo.lastrun = [DateTimeOffset]::Now.ToUnixTimeSeconds()
-    }
-    return $jobinfo
-}
 
 class jobinfo
 {
     [string]$jobname
     [string]$jobstatus
     [uint64]$lastrun
+
+    jobinfo($vccjob) {
+        $this.jobname = $vccjob.Name
+        $this.jobstatus = $vccjob.Lastresult
+        try
+        {
+            $this.lastrun = [datetime]::ParseExact($vccjob.Lastactive, "dd.MM.yyyy hh:mm", $null).ToUniversalTime() | Get-Date -UFormat "%s"
+        }
+        catch 
+        {
+            $this.lastrun = [DateTimeOffset]::Now.ToUnixTimeSeconds()
+        }
+    }
 }
 
 # Get information about one job
-if (-Not [string]::IsNullOrWhiteSpace($JobName)) {
+if (-Not [string]::IsNullOrWhiteSpace($TenantName)) {
     # Load cached veeam data from discovery
     $veeamdata = Import-Clixml -Path $xmlpath
-    if (($veeamdata | Where-Object { $_.jobname -eq $JobName } | Measure-Object).Count -le 0) {
+    if (($veeamdata | Where-Object { $_.jobname -eq $TenantName } | Measure-Object).Count -le 0) {
         exit
     }
-    $veeamdata | Where-Object { $_.jobname -eq $JobName } | Select-Object -First 1 | ConvertTo-Json -Compress
+    $veeamdata | Where-Object { $_.jobname -eq $TenantName } | Select-Object -First 1 | ConvertTo-Json -Compress
     exit
 }
 
-# Discovery all jobs
+# Discover all jobs
 $data = [array]@()
 
 
-Get-VBRCloudTenant | Where-Object { $_.Enabled -eq "True" } | ForEach-Object {
-    $jobinfo = CCToJobInfo -veeamjob $_
+Get-VBRCloudTenant | Where-Object { $_.Enabled -eq "True" -and $_.GetType().Name -eq "VBRCloudTenant" } | ForEach-Object {
+    $jobinfo = New-Object jobinfo -ArgumentList $_
     $data += $jobinfo
 }
 
