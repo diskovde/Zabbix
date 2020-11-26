@@ -7,5 +7,5 @@ if ($result.Contains("Already up to date.")) {
 }
 else {
 	Write-Host "Configuration updated, restarting Zabbix Agent"
-	Restart-Service "Zabbix Agent"
+	Restart-Service -Confirm:$false -Force "Zabbix Agent"
 }
