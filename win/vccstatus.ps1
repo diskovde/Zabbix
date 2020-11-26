@@ -15,7 +15,7 @@ class jobinfo
         $this.jobstatus = $vccjob.Lastresult
         try
         {
-            $this.lastrun = [datetime]::ParseExact($vccjob.Lastactive, "dd.MM.yyyy hh:mm", $null).ToUniversalTime() | Get-Date -UFormat "%s"
+            $this.lastrun = [datetime]::ParseExact($vccjob.LastActive, "dd.MM.yyyy HH:mm", $null).ToUniversalTime() | Get-Date -UFormat "%s"
         }
         catch 
         {
