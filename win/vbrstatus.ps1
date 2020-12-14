@@ -1,4 +1,4 @@
-﻿param([string]$VMName='')
+param([string]$VMName='')
 
 $xmlpath = $($env:ZABBIX_CONFDIR + "\state\VBRdump.xml")
 
@@ -10,7 +10,7 @@ class jobinfo
     [string]$jobstatus
     [uint64]$lastrun
     jobinfo([DateTime]$lastrun, [Veeam.Backup.Core.CBackupTaskSession]$veeamtasksession) {
-        $this.jobname = $veeamtasksession.Name
+        $this.jobname = $veeamtasksession.Name.Replace(" ", "_");
         $this.jobstatus = $veeamtasksession.Status
         $this.lastrun = $lastrun | Get-Date -UFormat %s
     }
