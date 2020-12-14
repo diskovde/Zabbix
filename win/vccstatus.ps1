@@ -11,7 +11,7 @@ class jobinfo
     [uint64]$lastrun
 
     jobinfo($vccjob) {
-        $this.jobname = $vccjob.Name
+        $this.jobname = $vccjob.Name.Replace(" ", "_");
         $this.jobstatus = $vccjob.Lastresult
         try
         {
