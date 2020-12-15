@@ -9,7 +9,8 @@ class jobinfo
     [string]$jobname
     [string]$jobstatus
     [uint64]$lastrun
-    jobinfo([DateTime]$lastrun, [Veeam.Backup.Core.CBackupTaskSession]$veeamtasksession) {
+	# [Veeam.Backup.Core.CBackupTaskSession]$veeamtasksession
+    jobinfo([DateTime]$lastrun, $veeamtasksession) {
         $this.jobname = ($veeamtasksession.JobName + $veeamtasksession.Name).ToLower().Replace(" ", "_").Replace("å","a").Replace("ä","a").Replace("ö","o");
         $this.jobstatus = $veeamtasksession.Status
         $this.lastrun = (($lastrun | Get-Date -UFormat %s), 0 | Measure-Object -Max).Maximum
