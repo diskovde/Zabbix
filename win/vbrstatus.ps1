@@ -11,7 +11,7 @@ class jobinfo
     [uint64]$lastrun
 	# [Veeam.Backup.Core.CBackupTaskSession]$veeamtasksession
     jobinfo([DateTime]$lastrun, $veeamtasksession) {
-        $this.jobname = ($veeamtasksession.JobName + $veeamtasksession.Name).ToLower().Replace(" ", "_").Replace("å","a").Replace("ä","a").Replace("ö","o");
+        $this.jobname = ($veeamtasksession.JobName + "_" + $veeamtasksession.Name).ToLower().Replace(" ", "_").Replace("å","a").Replace("ä","a").Replace("ö","o");
         $this.jobstatus = $veeamtasksession.Status
         $this.lastrun = (($lastrun | Get-Date -UFormat %s), 0 | Measure-Object -Max).Maximum
     }
