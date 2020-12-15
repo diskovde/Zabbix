@@ -12,7 +12,7 @@ class jobinfo
     jobinfo([DateTime]$lastrun, $veeamtasksession) {
         $this.jobname = $veeamtasksession.Name.Replace(" ", "_");
         $this.jobstatus = $veeamtasksession.Status
-        $this.lastrun = $lastrun | Get-Date -UFormat %s
+        $this.lastrun = (($lastrun | Get-Date -UFormat %s), 0 | Measure-Object -Max).Maximum
     }
 }
 
