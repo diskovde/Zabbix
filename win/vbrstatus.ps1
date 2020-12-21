@@ -9,11 +9,13 @@ class jobinfo
     [string]$jobname
     [string]$jobstatus
     [uint64]$lastrun
+    [string]$message
 	# [Veeam.Backup.Core.CBackupTaskSession]$veeamtasksession
-    jobinfo([DateTime]$lastrun, $veeamtasksession) {
+    jobinfo([DateTime]$lastrun, $veeamtasksession, [string]$message) {
         $this.jobname = ($veeamtasksession.JobName + "_" + $veeamtasksession.Name).ToLower().Replace(" ", "_").Replace("å","a").Replace("ä","a").Replace("ö","o");
         $this.jobstatus = $veeamtasksession.Status
         $this.lastrun = (($lastrun | Get-Date -UFormat %s), 0 | Measure-Object -Max).Maximum
+        $this.message = $message
     }
 }
 
@@ -37,7 +39,11 @@ Get-VBRJob | ForEach-Object {
     if (-Not $session) { continue }
 
     $session.GetTaskSessions() | ForEach-Object {
-        [jobinfo]$jobinfo = New-Object jobinfo -ArgumentList $lastrun,$_
+        [string]$message = ""
+        $_.Logger.GetLog().UpdatedRecords | Where-Object { $_.Status -ne "ESucceed" -and $_.Title -notmatch "Processing finished with" } | ForEach-Object {
+            $message += $_.Title + ";"
+        }
+        [jobinfo]$jobinfo = New-Object jobinfo -ArgumentList $lastrun,$_,$message
         $data += $jobinfo
     }
 }
