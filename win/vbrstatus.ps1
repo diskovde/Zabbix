@@ -10,7 +10,7 @@ class jobinfo
     [string]$jobstatus
     [uint64]$lastrun
     [string]$message
-	# [Veeam.Backup.Core.CBackupTaskSession]$veeamtasksession
+    # [Veeam.Backup.Core.CBackupTaskSession]$veeamtasksession
     jobinfo([DateTime]$lastrun, $veeamtasksession, [string]$message) {
         $this.jobname = ($veeamtasksession.JobName + "_" + $veeamtasksession.Name).ToLower().Replace(" ", "_").Replace("å","a").Replace("ä","a").Replace("ö","o");
         $this.jobstatus = $veeamtasksession.Status
