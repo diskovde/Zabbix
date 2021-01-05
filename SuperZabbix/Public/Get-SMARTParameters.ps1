@@ -15,9 +15,9 @@ function Get-SMARTParameters{
     $stats = $data.vmhosts | Where-Object { $_.name -eq $VMHost }
 
     if ([string]::IsNullOrWhiteSpace($Device)) {
-        ,$stats.drives | ConvertTo-Json2 # The "," prefix is required to stop PowerShell from unboxing arrays with one item in them
+        (,$stats.drives) | ConvertTo-Json2
     }
     else {
-        (,$stats.drives | Where-Object { $_.Device -eq $Device }) | ConvertTo-Json2 
+        ,($stats.drives | Where-Object { $_.device -eq $Device }) | ConvertTo-Json2 
     }
 }
